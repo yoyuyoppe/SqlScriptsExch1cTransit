@@ -1,4 +1,4 @@
-USE TRANSIT
+п»їUSE TRANSIT
 
 if OBJECT_ID('Add_hdrDeliveryRequest', 'P') is not null
 	drop procedure Add_hdrDeliveryRequest
@@ -68,7 +68,7 @@ GO
 		@Department nvarchar(500)=null,
 		@Comment nvarchar(200)=null, 
 		@DocNum nvarchar(50),
-		@DocSender nvarchar(50) = '1С',
+		@DocSender nvarchar(50) = '1РЎ',
 		@DocReceiver nvarchar(50) = 'WMS',
 		@RecordDate datetime = null,
 		@autotest bit = 0
@@ -82,13 +82,13 @@ GO
 			
 		IF @PartnerCode is not null and (select 1 where EXISTS (select ExternalCode from Partners where ExternalCode = @PartnerCode)) is null
 				begin					
-					set @TextErrorMsg = CONCAT('Не найден партнер (контрагент) с кодом: ', @PartnerCode);
+					set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅ РїР°СЂС‚РЅРµСЂ (РєРѕРЅС‚СЂР°РіРµРЅС‚) СЃ РєРѕРґРѕРј: ', @PartnerCode);
 					THROW 51000, @TextErrorMsg, 16
 				end;
 		
 		IF (select 1 where EXISTS (select ExternalCode from Partners where ExternalCode = @OwnerCode)) is null
 				begin
-					set @TextErrorMsg = CONCAT('Не найден владелец запасов (кластер) с кодом: ', @OwnerCode);
+					set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅ РІР»Р°РґРµР»РµС† Р·Р°РїР°СЃРѕРІ (РєР»Р°СЃС‚РµСЂ) СЃ РєРѕРґРѕРј: ', @OwnerCode);
 					THROW 51000, @TextErrorMsg, 16
 				end;
 
@@ -122,7 +122,7 @@ GO
 		@MaterialSeriesCode nvarchar(50) = null,
 		@QualityTypeCode nvarchar(50) = null,
 		@DocNum nvarchar(50),
-		@DocSender nvarchar(50) = '1С',
+		@DocSender nvarchar(50) = '1РЎ',
 		@DocReceiver nvarchar(50) = 'WMS',
 		@RecordDate datetime = null,
 		@autotest bit = 0
@@ -135,7 +135,7 @@ GO
 			IF (select 1 where EXISTS (select ExternalCode from Materials where ExternalCode = @MaterialCode)) is null
 				begin
 					declare @TextErrorMsg nvarchar(max)				
-					set @TextErrorMsg = CONCAT('Не найден материал с кодом: ', @MaterialCode);
+					set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅ РјР°С‚РµСЂРёР°Р» СЃ РєРѕРґРѕРј: ', @MaterialCode);
 					THROW 51000, @TextErrorMsg, 16
 				end;
 
@@ -185,7 +185,7 @@ GO
 
 CREATE PROC
 
-	Add_DocNum @DocNum nvarchar(50), @DocSender nvarchar(50) = '1С', @DocReceiver nvarchar(50) = 'WMS', @autotest bit = 0
+	Add_DocNum @DocNum nvarchar(50), @DocSender nvarchar(50) = '1РЎ', @DocReceiver nvarchar(50) = 'WMS', @autotest bit = 0
  as 
 
  begin
@@ -362,7 +362,7 @@ GO
 CREATE PROC Add_Material 
 	@ExternalCode nvarchar(50), @Article nvarchar(50) = null, @Name nvarchar(500), @Shelflife int = null, @BaseUnitCode nvarchar(50),
 	@CargoUnitCode nvarchar(50) = null, @MaterialGroupCode nvarchar(50) = null, @StorageGroupCode nvarchar(50) = null, @PickingGroupCode nvarchar(50) = null,
-	@IsNeedBatch bit = null, @IsProductionDateCheck bit = null, @IsNeedAm bit = null, @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1С', 
+	@IsNeedBatch bit = null, @IsProductionDateCheck bit = null, @IsNeedAm bit = null, @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1РЎ', 
 	@DOC_RECEIVER nvarchar(50) = 'WMS', @shortname nvarchar(255), @autotest bit = 0
 AS 
 BEGIN
@@ -378,7 +378,7 @@ END;
 GO
 
 CREATE PROC Add_Units @ExternalCode nvarchar(50), @Name nvarchar(200), @ShortName nvarchar(50), 
-					@DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
+					@DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
 AS
 BEGIN
 	
@@ -393,7 +393,7 @@ END;
 GO
 
 CREATE PROC Add_MaterialGroup @ExternalCode nvarchar(50), @Name nvarchar(250), @DOCNUM nvarchar(50),
-							@DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
+							@DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
 AS
 BEGIN
 
@@ -408,7 +408,7 @@ END;
 GO
 
 CREATE PROC Add_StorageGroup @ExternalCode nvarchar(50), @Name nvarchar(250), @DOCNUM nvarchar(50),
-							@DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
+							@DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
 AS
 BEGIN
 
@@ -423,7 +423,7 @@ END;
 GO
 
 CREATE PROC Add_PickingGroup @ExternalCode nvarchar(50), @Name nvarchar(250), @DOCNUM nvarchar(50),
-							@DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
+							@DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
 AS
 BEGIN
 
@@ -438,7 +438,7 @@ END;
 GO
 
 CREATE PROC Add_FormFactor @ExternalCode nvarchar(50), @Name nvarchar(250), @PickingPriority int, @DOCNUM nvarchar(50),
-							@DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
+							@DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
 AS
 BEGIN
 
@@ -454,7 +454,7 @@ GO
 
 CREATE PROC Add_MaterialUnit
 @ExternalCode nvarchar(50), @MaterialCode nvarchar(50), @UnitCode nvarchar(50), @Koeff decimal(25,6), @Weight decimal(25,6) = null, @Volume decimal(25,5)=null,
-@PackTypeCode nvarchar(50)=null, @FormFactorCode nvarchar(50) = null, @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
+@PackTypeCode nvarchar(50)=null, @FormFactorCode nvarchar(50) = null, @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
 as 
 BEGIN
 
@@ -465,12 +465,12 @@ declare @TextErrorMsg nvarchar(max)
 
 if (select 1 where exists(select tid from Materials where ExternalCode = @MaterialCode)) is null
 	begin
-		set @TextErrorMsg = CONCAT('Не найден владелец единицы измерения в таблице "Materials" с кодом: ', @MaterialCode);
+		set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅ РІР»Р°РґРµР»РµС† РµРґРёРЅРёС†С‹ РёР·РјРµСЂРµРЅРёСЏ РІ С‚Р°Р±Р»РёС†Рµ "Materials" СЃ РєРѕРґРѕРј: ', @MaterialCode);
 		THROW 51000, @TextErrorMsg, 16
 	end;
 else if (select 1 where exists (select tid from Units where ExternalCode = @UnitCode)) is null
 	begin
-		set @TextErrorMsg = CONCAT('Не найдена единица по классификатору в таблице "Units" с кодом: ', @UnitCode);
+		set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅР° РµРґРёРЅРёС†Р° РїРѕ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂСѓ РІ С‚Р°Р±Р»РёС†Рµ "Units" СЃ РєРѕРґРѕРј: ', @UnitCode);
 		THROW 51000, @TextErrorMsg, 16
 	end;
 	
@@ -483,7 +483,7 @@ GO
 
 CREATE PROC Add_MaterialUnitBarcode
 	@ExternalCode nvarchar(50), @MaterialCode nvarchar(50), @MaterialUnitCode nvarchar(50), @Barcode nvarchar(50), 
-	@DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @DOCNUM nvarchar(50), @autotest bit = 0
+	@DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) = 'WMS', @DOCNUM nvarchar(50), @autotest bit = 0
 AS
 BEGIN
 	
@@ -493,13 +493,13 @@ BEGIN
 	declare @TextErrorMsg nvarchar(max)
 	if (select 1 where exists(select tid from Materials where ExternalCode = @MaterialCode)) is null
 		begin
-			set @TextErrorMsg = CONCAT('Не найден материал с кодом: ', @MaterialCode);
+			set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅ РјР°С‚РµСЂРёР°Р» СЃ РєРѕРґРѕРј: ', @MaterialCode);
 			THROW 51000, @TextErrorMsg, 16
 		end;
 
 	if (select 1 where exists(select tid from MaterialUnits where ExternalCode = @MaterialUnitCode)) is null
 		begin
-			set @TextErrorMsg = CONCAT('Не найдена единица материала с кодом: ', @MaterialUnitCode);
+			set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅР° РµРґРёРЅРёС†Р° РјР°С‚РµСЂРёР°Р»Р° СЃ РєРѕРґРѕРј: ', @MaterialUnitCode);
 			THROW 51000, @TextErrorMsg, 16
 		end;
 
@@ -511,7 +511,7 @@ END;
 GO
 
 CREATE PROC Add_Producer @ExternalCode nvarchar(50), @Name nvarchar(250), @ShortName nvarchar(50)=null, @DOCNUM nvarchar(50),
-			@DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
+			@DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
 AS
 BEGIN
 	
@@ -536,13 +536,13 @@ BEGIN
 	declare @TextErrorMsg nvarchar(max)
 	if (select 1 where exists(select tid from Producers where ExternalCode = @ProducerCode)) is null
 		begin
-			set @TextErrorMsg = CONCAT('Не найден производитель с кодом: ', @ProducerCode);
+			set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊ СЃ РєРѕРґРѕРј: ', @ProducerCode);
 			THROW 51000, @TextErrorMsg, 16
 		end;
 
 	if (select 1 where exists(select tid from Materials where ExternalCode = @MaterialCode)) is null
 		begin
-			set @TextErrorMsg = CONCAT('Не найден материал с кодом: ', @MaterialCode);
+			set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅ РјР°С‚РµСЂРёР°Р» СЃ РєРѕРґРѕРј: ', @MaterialCode);
 			THROW 51000, @TextErrorMsg, 16
 		end;
 
@@ -556,7 +556,7 @@ GO
 CREATE PROC Add_hdrTransport 
 	@ExternalCode nvarchar (50), @TransportBrand nvarchar(50), @TransportNumber nvarchar(50), 
 	@DriverFirstName nvarchar(50)=null, @DriverLastName nvarchar(50)=null, @DriverMiddleName nvarchar(50)=null,
-	@HandlingTypeCode nvarchar(50), @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50)='1С', @DOC_RECEIVER nvarchar(50)='WMS',
+	@HandlingTypeCode nvarchar(50), @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50)='1РЎ', @DOC_RECEIVER nvarchar(50)='WMS',
 	@DeliveryDate datetime=null, @DeliveryTime varchar(20)=null, @RouteNumber varchar(500)=null, @MaxPalletCount int, @MaxPalletHeight decimal(25,6), 
 	@RecordDate datetime = null, @autotest bit=0
 AS
@@ -579,7 +579,7 @@ GO
 
 CREATE PROC Add_tblTransport
 	@ExternalCode nvarchar(50), @TransportCode nvarchar(50), @DeliveryRequestCode nvarchar(50), @Priority int=null,
-	@DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50)='1С', @DOC_RECEIVER nvarchar(50)='WMS', @autotest bit=0
+	@DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50)='1РЎ', @DOC_RECEIVER nvarchar(50)='WMS', @autotest bit=0
 AS
 	BEGIN
 		
@@ -589,7 +589,7 @@ AS
 		if (select 1 where exists(select tid from hdr_Transport where ExternalCode = @TransportCode)) is null
 			begin
 				declare @TextErrorMsg nvarchar(max);
-				set @TextErrorMsg = CONCAT('Не найден транспорт с кодом:', @TransportCode);
+				set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅ С‚СЂР°РЅСЃРїРѕСЂС‚ СЃ РєРѕРґРѕРј:', @TransportCode);
 				THROW 51, @TextErrorMsg, 16
 			end;
 
@@ -600,7 +600,7 @@ AS
 
 	GO
 
-	CREATE PROC Add_PartnerGroup @ExternalCode nvarchar(50), @Name nvarchar(250), @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) ='1С', @DOC_RECEIVER nvarchar(50) ='WMS', @autotest bit = 0
+	CREATE PROC Add_PartnerGroup @ExternalCode nvarchar(50), @Name nvarchar(250), @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) ='1РЎ', @DOC_RECEIVER nvarchar(50) ='WMS', @autotest bit = 0
 	AS
 	BEGIN
 		
@@ -615,7 +615,7 @@ AS
 	GO
 
 	CREATE PROC Add_Partner @ExternalCode nvarchar(50), @Name nvarchar(250), @ShortName nvarchar(50), @RemainingShelfLife int = null,
-				@PartnerGroupCode nvarchar(50) = null, @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) ='WMS', @autotest bit = 0
+				@PartnerGroupCode nvarchar(50) = null, @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) ='WMS', @autotest bit = 0
 as
 	BEGIN
 
@@ -625,7 +625,7 @@ as
 		if @PartnerGroupCode is not null and (select 1 where exists(select tid from PartnerGroups where ExternalCode = @PartnerGroupCode)) is null
 			begin
 				declare @TextErrorMsg nvarchar(max);
-				set @TextErrorMsg = CONCAT('Не найдена группа партнера с кодом:', @PartnerGroupCode);
+				set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅР° РіСЂСѓРїРїР° РїР°СЂС‚РЅРµСЂР° СЃ РєРѕРґРѕРј:', @PartnerGroupCode);
 				THROW 51, @TextErrorMsg, 16
 			end;
 
@@ -764,7 +764,7 @@ GO
 
 CREATE PROC Add_BatchNumbers 
 	@ExternalCode nvarchar(70), @MaterialCode nvarchar(50), @BatchNumber nvarchar(200), @ExpirationDate date, @DocumentNumbers nvarchar(50), 
-	@DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit=0
+	@DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1РЎ', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit=0
 AS
 BEGIN
 	
@@ -774,7 +774,7 @@ BEGIN
 	IF (select 1 where EXISTS (select ExternalCode from Materials where ExternalCode = @MaterialCode)) is null
 				begin
 					declare @TextErrorMsg nvarchar(max)				
-					set @TextErrorMsg = CONCAT('Не найден материал с кодом: ', @MaterialCode);
+					set @TextErrorMsg = CONCAT('РќРµ РЅР°Р№РґРµРЅ РјР°С‚РµСЂРёР°Р» СЃ РєРѕРґРѕРј: ', @MaterialCode);
 					THROW 51000, @TextErrorMsg, 16
 				end;
 				

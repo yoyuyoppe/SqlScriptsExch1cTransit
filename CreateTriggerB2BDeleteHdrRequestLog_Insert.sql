@@ -1,4 +1,4 @@
-use LEADWMS
+﻿use LEADWMS
 go
 
 if OBJECT_ID('B2BDeleteHdrRequestLog_Insert', 'TR') is not null
