@@ -52,6 +52,10 @@ if OBJECT_ID('Get_B2BDeleteHdrRequest', 'P') is not null
 	DROP PROCEDURE Get_B2BDeleteHdrRequest
 if OBJECT_ID('Patch_B2BDeleteHdrRequest', 'P') is not null
 	DROP PROCEDURE Patch_B2BDeleteHdrRequest
+if OBJECT_ID('Add_MaterialSpecifications', 'P') is not null
+	DROP PROCEDURE Add_MaterialSpecifications
+if OBJECT_ID('Add_MaterialSpecificationsInput_Output', 'P') is not null
+	DROP PROCEDURE Add_MaterialSpecificationsInput_Output
 
 GO
 	CREATE PROC Add_hdrDeliveryRequest
@@ -803,4 +807,34 @@ BEGIN
 
 END;
 
+GO
+
+CREATE PROC Add_MaterialSpecifications @ExternalCode nvarchar(50), @Name nvarchar(250), @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0 AS
+BEGIN
+	
+	if @autotest = 1
+		return
+
+	INSERT INTO MaterialSpecifications (ExternalCode, Name, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
+	VALUES (@ExternalCode, @Name, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, GETDATE())
+
+END;
+
+GO
+
+CREATE PROC Add_MaterialSpecificationsInput_Output @ExternalCode nvarchar(50), @SpecificationCode nvarchar(50), @MaterialCode nvarchar(50), @QualityTypeCode nvarchar(50),
+@Quantity decimal(25,6) = null, @MaterialUnitCode nvarchar(50) = null, @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) = 'WMS', @autotest bit = 0
+AS 
+BEGIN
+	
+	if @autotest = 1
+		return
+
+	INSERT INTO MaterialSpecificationInput(ExternalCode, SpecificationCode, MaterialCode, QualityTypeCode, Quantity, MaterialUnitCode, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
+	VALUES (@ExternalCode, @SpecificationCode, @MaterialCode, @QualityTypeCode, @Quantity, @MaterialUnitCode, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, GETDATE())
+
+	INSERT INTO MaterialSpecificationOutput(ExternalCode, SpecificationCode, MaterialCode, QualityTypeCode, Quantity, MaterialUnitCode, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
+	VALUES (@ExternalCode, @SpecificationCode, @MaterialCode, @QualityTypeCode, @Quantity, @MaterialUnitCode, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, GETDATE())
+
+END;
 
