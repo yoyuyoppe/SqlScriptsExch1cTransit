@@ -56,6 +56,8 @@ if OBJECT_ID('Add_MaterialSpecifications', 'P') is not null
 	DROP PROCEDURE Add_MaterialSpecifications
 if OBJECT_ID('Add_MaterialSpecificationsInput_Output', 'P') is not null
 	DROP PROCEDURE Add_MaterialSpecificationsInput_Output
+IF(OBJECT_ID('LoadDictFromCSV', 'P')) is not null
+	drop proc LoadDictFromCSV
 
 GO
 	CREATE PROC Add_hdrDeliveryRequest
@@ -835,6 +837,28 @@ BEGIN
 
 	INSERT INTO MaterialSpecificationOutput(ExternalCode, SpecificationCode, MaterialCode, QualityTypeCode, Quantity, MaterialUnitCode, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
 	VALUES (@ExternalCode, @SpecificationCode, @MaterialCode, @QualityTypeCode, @Quantity, @MaterialUnitCode, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, GETDATE())
+
+END;
+
+GO
+
+CREATE PROC LoadDictFromCSV @TableName nvarchar(100), @File nvarchar(max)
+AS 
+BEGIN
+
+	declare @CommandText nvarchar(max)
+
+	begin try
+		set @CommandText = 'BULK INSERT &TableName FROM ''&File'' WITH (FIRSTROW = 1,CODEPAGE = ''1251'', DATAFILETYPE = ''char'',FIELDTERMINATOR = '';'' , ROWTERMINATOR = ''\n'')'	
+		set @CommandText = REPLACE(@CommandText, '&TableName', @TableName)
+		set @CommandText = REPLACE(@CommandText, '&File', @File)
+
+		exec (@CommandText)
+	end try
+
+	begin catch
+		THROW
+	end catch;
 
 END;
 
