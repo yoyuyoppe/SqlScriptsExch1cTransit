@@ -98,8 +98,7 @@ GO
 					THROW 51000, @TextErrorMsg, 16
 				end;
 
-		IF (select 1 where exists (select tid from LEADWMS.dbo.wwwB2BDeleteHdrRequestLog where Transaction_id = 
-			(select LocalValue from LEADWMS.dbo.temp_ElementIntegration_623 where TargetValue = @ExternalCode))) = 1
+		IF (select 1 where exists (select id from B2BDeleteHdrRequestLog where ExternalCode = @ExternalCode)) = 1
 			begin
 				delete from LEADWMS.dbo.temp_ElementIntegration_623 where TargetValue = @ExternalCode
 				delete from LEADWMS.dbo.temp_ElementIntegration_625 where TargetValue IN (select ExternalCode 
@@ -564,20 +563,19 @@ CREATE PROC Add_hdrTransport
 	@DriverFirstName nvarchar(50)=null, @DriverLastName nvarchar(50)=null, @DriverMiddleName nvarchar(50)=null,
 	@HandlingTypeCode nvarchar(50), @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50)='1С', @DOC_RECEIVER nvarchar(50)='WMS',
 	@DeliveryDate datetime=null, @DeliveryTime varchar(20)=null, @RouteNumber varchar(500)=null, @MaxPalletCount int, @MaxPalletHeight decimal(25,6), 
-	@RecordDate datetime = null, @autotest bit=0
+	@RecordDate datetime = null, @autotest bit=0, @DriverPhoneNumber nvarchar(50) = null, @ExpeditorFirstName nvarchar(50)=null, @ExpeditorMiddleName nvarchar(50)=null,
+	@ExpeditorLastName nvarchar(50)=null, @ExpeditorPhoneNumber nvarchar(50)=null
 AS
 	BEGIN
 		
 		if @autotest = 1
 			return
 
-		/*if (select 1 where exists(select tid from hdr_Transport where ExternalCode = @ExternalCode and RouteNumber = @RouteNumber)) is not null
-			return*/
 
 		INSERT INTO hdr_Transport (ExternalCode, TransportBrand, TransportNumber, DriverFirstName, DriverLastName, DriverMiddleName, HandlingTypeCode, DOCNUM, DOC_SENDER,
-			DOC_RECEIVER, DeliveryDate, DeliveryTime, RouteNumber, MaxPalletCount, MaxPalletHeight, RecordDate)
+			DOC_RECEIVER, DeliveryDate, DeliveryTime, RouteNumber, MaxPalletCount, MaxPalletHeight, RecordDate, DriverPhoneNumber, ExpeditorFirstName, ExpeditorMiddleName, ExpeditorLastName, ExpeditorPhoneNumber)
 		VALUES (@ExternalCode, @TransportBrand, @TransportNumber, @DriverFirstName, @DriverLastName, @DriverMiddleName, @HandlingTypeCode, @DOCNUM, @DOC_SENDER,
-			@DOC_RECEIVER, @DeliveryDate, @DeliveryTime, @RouteNumber, @MaxPalletCount, @MaxPalletHeight, GETDATE())
+			@DOC_RECEIVER, @DeliveryDate, @DeliveryTime, @RouteNumber, @MaxPalletCount, @MaxPalletHeight, GETDATE(), @DriverPhoneNumber, @ExpeditorFirstName, @ExpeditorMiddleName, @ExpeditorLastName, @ExpeditorPhoneNumber)
 
 	END;
 
@@ -596,7 +594,7 @@ AS
 			begin
 				declare @TextErrorMsg nvarchar(max);
 				set @TextErrorMsg = CONCAT('Не найден транспорт с кодом:', @TransportCode);
-				THROW 51, @TextErrorMsg, 16
+				THROW 51000, @TextErrorMsg, 16
 			end;
 
 		INSERT INTO tbl_Transport (ExternalCode, TransportCode, DeliveryRequestCode, Priority, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
@@ -604,7 +602,7 @@ AS
 
 	END;
 
-	GO
+GO
 
 	CREATE PROC Add_PartnerGroup @ExternalCode nvarchar(50), @Name nvarchar(250), @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) ='1С', @DOC_RECEIVER nvarchar(50) ='WMS', @autotest bit = 0
 	AS
@@ -618,7 +616,7 @@ AS
 
 	END;
 
-	GO
+GO
 
 	CREATE PROC Add_Partner @ExternalCode nvarchar(50), @Name nvarchar(250), @ShortName nvarchar(50), @RemainingShelfLife int = null,
 				@PartnerGroupCode nvarchar(50) = null, @DOCNUM nvarchar(50), @DOC_SENDER nvarchar(50) = '1С', @DOC_RECEIVER nvarchar(50) ='WMS', @autotest bit = 0
@@ -679,9 +677,11 @@ BEGIN
 	declare @filter nvarchar(max) = ''
 	declare @StructureMaterialsParameterType_id nvarchar(15)
 	declare @StructureMaterialUnitsParameterType_id nvarchar(15)
+	declare @StructureDebtorsParameterType_id nvarchar(15)
 
 	set @StructureMaterialsParameterType_id = cast((select s.ParameterType_id from LEADWMS.dbo.Structures as s where Identifier = 'Materials') as nvarchar(200))
 	set @StructureMaterialUnitsParameterType_id = cast((select s.ParameterType_id from LEADWMS.dbo.Structures as s where Identifier = 'MaterialUnits') as nvarchar(200))
+	set @StructureDebtorsParameterType_id = cast((select s.ParameterType_id from LEADWMS.dbo.Structures as s where Identifier = 'Debtors') as nvarchar(200))
 
 	if @Owner is not null
 		begin
@@ -724,7 +724,9 @@ BEGIN
 		ei_material_units.TargetValue as MaterialUnit_id,
 		h.NameRU as StockType,
 		ws.StockType_id as StockType_id,
+		h.ExternalCode as QualityTypeCode,
 		i.ShortName as OwnerStock,
+		ei_debtors.TargetValue as Owner_id,
 		ws.BaseQuantity AS BaseQuantity,
 		isnull(TRY_CONVERT(nvarchar(25), bo.ProdDate, 112), ''00010101'') as ProdDate,
 		isnull(TRY_CONVERT(nvarchar(25), bo.ExpDate, 112), ''00010101'') as ExpDate
@@ -734,6 +736,8 @@ BEGIN
 			on ws.BarcodeObject_id = bo.tid
 		join LEADWMS.dbo.Debtors as i with (nolock) 
 			on bo.OwnerDebtor_id = i.tid
+		join LEADWMS.dbo.temp_ElementIntegration_'+@StructureDebtorsParameterType_id+' as ei_debtors
+			on bo.OwnerDebtor_id = ei_debtors.LocalValue
 		join LEADWMS.dbo.temp_ElementIntegration_'+@StructureMaterialsParameterType_id+' as ei_materials
 			on ws.Material_id = ei_materials.LocalValue
 		join LEADWMS.dbo.Materials as m with (nolock)
@@ -756,7 +760,22 @@ BEGIN
 			on ws.StockType_id = h.tid
 	where
 		ws.BaseQuantity > 0
-		&filter 
+		&filter
+	group by
+		e.NameRU,
+		LEADWMS.dbo.ObjectLocation(c.tid),
+		ei_materials.TargetValue,
+		m.NameRu,
+		isnull(l.ShortName, l.NameRU),
+		ei_material_units.TargetValue,
+		h.NameRU,
+		ws.StockType_id,
+		h.ExternalCode,
+		i.ShortName,
+		ei_debtors.TargetValue,
+		ws.BaseQuantity,
+		isnull(TRY_CONVERT(nvarchar(25), bo.ProdDate, 112), ''00010101''),
+		isnull(TRY_CONVERT(nvarchar(25), bo.ExpDate, 112), ''00010101'')
 	order by
 		TechnoZone, Material'
 
