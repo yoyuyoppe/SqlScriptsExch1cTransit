@@ -57,7 +57,9 @@ if OBJECT_ID('Add_MaterialSpecifications', 'P') is not null
 if OBJECT_ID('Add_MaterialSpecificationsInput_Output', 'P') is not null
 	DROP PROCEDURE Add_MaterialSpecificationsInput_Output
 IF(OBJECT_ID('LoadDictFromCSV', 'P')) is not null
-	drop proc LoadDictFromCSV
+	drop proc LoadDictFromCSV 
+IF(OBJECT_ID('MappingStockTypes', 'P')) is not null
+	drop proc MappingStockTypes 
 
 GO
 	CREATE PROC Add_hdrDeliveryRequest
@@ -375,6 +377,10 @@ BEGIN
 	if @autotest = 1
 		return
 
+	if (select LocalValue from LEADWMS.dbo.temp_ElementIntegration_65 where TargetValue = @ExternalCode) is not null
+		and (select 1 where EXISTS (select tid from LEADWMS.dbo.Materials where tid = (select LocalValue from LEADWMS.dbo.temp_ElementIntegration_65 where TargetValue = @ExternalCode))) is null
+		delete from LEADWMS.dbo.temp_ElementIntegration_65 where TargetValue = @ExternalCode
+
 	INSERT INTO Materials(ExternalCode, Article, Name, ShelfLife, BaseUnitCode, CargoUnitCode, MaterialGroupCode, StorageGroupCode, PickingGroupCode, IsNeedBatch, IsProductionDateCheck, IsNeedAM, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate, ShortName)
 	VALUES(@ExternalCode, @Article, @Name, @ShelfLife, @BaseUnitCode, @CargoUnitCode, @MaterialGroupCode, @StorageGroupCode, @PickingGroupCode, @IsNeedBatch, @IsProductionDateCheck, @IsNeedAM, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, GETDATE(), @shortname)
 
@@ -478,6 +484,10 @@ else if (select 1 where exists (select tid from Units where ExternalCode = @Unit
 		set @TextErrorMsg = CONCAT('Не найдена единица по классификатору в таблице "Units" с кодом: ', @UnitCode);
 		THROW 51000, @TextErrorMsg, 16
 	end;
+
+if (select LocalValue from LEADWMS.dbo.temp_ElementIntegration_73 where TargetValue = @ExternalCode) is not null
+	and (select 1 where EXISTS (select tid from LEADWMS.dbo.MaterialUnits where tid = (select LocalValue from LEADWMS.dbo.temp_ElementIntegration_73 where TargetValue = @ExternalCode))) is null
+	delete from LEADWMS.dbo.temp_ElementIntegration_73 where TargetValue = @ExternalCode
 	
 INSERT INTO MaterialUnits(ExternalCode, MaterialCode, UnitCode, Koeff, Weight, Volume, PackTypeCode, FormFactorCode, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)		
 VALUES (@ExternalCode, @MaterialCode, @UnitCode, @Koeff, @Weight, @Volume, @PackTypeCode, @FormFactorCode, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, GETDATE())
@@ -507,6 +517,10 @@ BEGIN
 			set @TextErrorMsg = CONCAT('Не найдена единица материала с кодом: ', @MaterialUnitCode);
 			THROW 51000, @TextErrorMsg, 16
 		end;
+
+	if (select LocalValue from LEADWMS.dbo.temp_ElementIntegration_622 where TargetValue = @ExternalCode) is not null
+		and (select 1 where EXISTS (select tid from LEADWMS.dbo.MaterialUnitBarcodes where tid = (select LocalValue from LEADWMS.dbo.temp_ElementIntegration_622 where TargetValue = @ExternalCode))) is null
+		delete from LEADWMS.dbo.temp_ElementIntegration_622 where TargetValue = @ExternalCode
 
 	INSERT INTO MaterialUnitBarcodes (ExternalCode, MaterialCode, MaterialUnitCode, Barcode, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
 	VALUES (@ExternalCode, @MaterialCode, @MaterialUnitCode, @Barcode, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, GETDATE())
@@ -880,4 +894,29 @@ BEGIN
 	end catch;
 
 END;
+
+GO
+
+CREATE PROC MappingStockTypes @ExternalCode nvarchar(50)
+as
+begin
+
+	if (select 1 where exists(select tid from LEADWMS.dbo.temp_elementintegration_80 where TargetValue = @ExternalCode)) is not null
+		return
+
+	declare @LocalValue int = (select tid from LEADWMS.dbo.StockTypes where ExternalCode = @ExternalCode)
+	declare @TextErrorMsg nvarchar(max)
+	
+	if @LocalValue is not null
+		begin
+			insert into LEADWMS.dbo.temp_elementintegration_80(SystemCode, LocalValue, TargetValue)
+			VALUES ('1С', @LocalValue, @ExternalCode)
+		end;
+	else
+		begin
+			set @TextErrorMsg = CONCAT('Не найден вид запаса с внешним кодом: ', @ExternalCode);
+			THROW 51000, @TextErrorMsg, 16
+		end;
+	
+end;
 
