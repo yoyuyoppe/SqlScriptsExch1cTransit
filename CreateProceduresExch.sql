@@ -90,14 +90,14 @@ GO
 			
 		IF @PartnerCode is not null and (select 1 where EXISTS (select ExternalCode from Partners where ExternalCode = @PartnerCode)) is null
 				begin					
-					set @TextErrorMsg = CONCAT('Не найден партнер (контрагент) с кодом: ', @PartnerCode);
-					THROW 51000, @TextErrorMsg, 16
+					set @TextErrorMsg = CONCAT('(51001) Не найден партнер (контрагент) с кодом: #!', @PartnerCode);
+					THROW 51001, @TextErrorMsg, 16
 				end;
 		
 		IF (select 1 where EXISTS (select ExternalCode from Partners where ExternalCode = @OwnerCode)) is null
 				begin
-					set @TextErrorMsg = CONCAT('Не найден владелец запасов (кластер) с кодом: ', @OwnerCode);
-					THROW 51000, @TextErrorMsg, 16
+					set @TextErrorMsg = CONCAT('(51002) Не найден владелец запасов (кластер) с кодом: #!', @OwnerCode);
+					THROW 51002, @TextErrorMsg, 16
 				end;
 
 		IF (select 1 where exists (select id from B2BDeleteHdrRequestLog where ExternalCode = @ExternalCode)) = 1
@@ -142,7 +142,7 @@ GO
 			IF (select 1 where EXISTS (select ExternalCode from Materials where ExternalCode = @MaterialCode)) is null
 				begin
 					declare @TextErrorMsg nvarchar(max)				
-					set @TextErrorMsg = CONCAT('Не найден материал с кодом: ', @MaterialCode);
+					set @TextErrorMsg = CONCAT('(51003) Не найден материал с кодом: #!', @MaterialCode);
 					THROW 51000, @TextErrorMsg, 16
 				end;
 
@@ -476,13 +476,13 @@ declare @TextErrorMsg nvarchar(max)
 
 if (select 1 where exists(select tid from Materials where ExternalCode = @MaterialCode)) is null
 	begin
-		set @TextErrorMsg = CONCAT('Не найден владелец единицы измерения в таблице "Materials" с кодом: ', @MaterialCode);
-		THROW 51000, @TextErrorMsg, 16
+		set @TextErrorMsg = CONCAT('(51003) Не найден владелец единицы измерения в таблице "Materials" с кодом: #!', @MaterialCode);
+		THROW 51003, @TextErrorMsg, 16
 	end;
 else if (select 1 where exists (select tid from Units where ExternalCode = @UnitCode)) is null
 	begin
-		set @TextErrorMsg = CONCAT('Не найдена единица по классификатору в таблице "Units" с кодом: ', @UnitCode);
-		THROW 51000, @TextErrorMsg, 16
+		set @TextErrorMsg = CONCAT('(51004) Не найдена единица по классификатору в таблице "Units" с кодом: #!', @UnitCode);
+		THROW 51004, @TextErrorMsg, 16
 	end;
 
 if (select LocalValue from LEADWMS.dbo.temp_ElementIntegration_73 where TargetValue = @ExternalCode) is not null
@@ -508,14 +508,14 @@ BEGIN
 	declare @TextErrorMsg nvarchar(max)
 	if (select 1 where exists(select tid from Materials where ExternalCode = @MaterialCode)) is null
 		begin
-			set @TextErrorMsg = CONCAT('Не найден материал с кодом: ', @MaterialCode);
-			THROW 51000, @TextErrorMsg, 16
+			set @TextErrorMsg = CONCAT('(51003) Не найден материал с кодом: #!', @MaterialCode);
+			THROW 51003, @TextErrorMsg, 16
 		end;
 
 	if (select 1 where exists(select tid from MaterialUnits where ExternalCode = @MaterialUnitCode)) is null
 		begin
-			set @TextErrorMsg = CONCAT('Не найдена единица материала с кодом: ', @MaterialUnitCode);
-			THROW 51000, @TextErrorMsg, 16
+			set @TextErrorMsg = CONCAT('(51005) Не найдена единица материала с кодом: #!', @MaterialUnitCode);
+			THROW 51005, @TextErrorMsg, 16
 		end;
 
 	if (select LocalValue from LEADWMS.dbo.temp_ElementIntegration_622 where TargetValue = @ExternalCode) is not null
@@ -555,14 +555,14 @@ BEGIN
 	declare @TextErrorMsg nvarchar(max)
 	if (select 1 where exists(select tid from Producers where ExternalCode = @ProducerCode)) is null
 		begin
-			set @TextErrorMsg = CONCAT('Не найден производитель с кодом: ', @ProducerCode);
-			THROW 51000, @TextErrorMsg, 16
+			set @TextErrorMsg = CONCAT('(51006) Не найден производитель с кодом: #!', @ProducerCode);
+			THROW 51006, @TextErrorMsg, 16
 		end;
 
 	if (select 1 where exists(select tid from Materials where ExternalCode = @MaterialCode)) is null
 		begin
-			set @TextErrorMsg = CONCAT('Не найден материал с кодом: ', @MaterialCode);
-			THROW 51000, @TextErrorMsg, 16
+			set @TextErrorMsg = CONCAT('(51003) Не найден материал с кодом: #!', @MaterialCode);
+			THROW 51003, @TextErrorMsg, 16
 		end;
 
 	INSERT INTO MaterialsAndProducers(ExternalCode, ProducerCode, MaterialCode, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)	
@@ -607,8 +607,8 @@ AS
 		if (select 1 where exists(select tid from hdr_Transport where ExternalCode = @TransportCode)) is null
 			begin
 				declare @TextErrorMsg nvarchar(max);
-				set @TextErrorMsg = CONCAT('Не найден транспорт с кодом:', @TransportCode);
-				THROW 51000, @TextErrorMsg, 16
+				set @TextErrorMsg = CONCAT('(51007) Не найден транспорт с кодом: #!', @TransportCode);
+				THROW 51007, @TextErrorMsg, 16
 			end;
 
 		INSERT INTO tbl_Transport (ExternalCode, TransportCode, DeliveryRequestCode, Priority, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
@@ -643,8 +643,8 @@ as
 		if @PartnerGroupCode is not null and (select 1 where exists(select tid from PartnerGroups where ExternalCode = @PartnerGroupCode)) is null
 			begin
 				declare @TextErrorMsg nvarchar(max);
-				set @TextErrorMsg = CONCAT('Не найдена группа партнера с кодом:', @PartnerGroupCode);
-				THROW 51, @TextErrorMsg, 16
+				set @TextErrorMsg = CONCAT('(51008) Не найдена группа партнера с кодом: #!', @PartnerGroupCode);
+				THROW 51008, @TextErrorMsg, 16
 			end;
 
 		INSERT INTO Partners (ExternalCode, Name, ShortName, RemainingShelfLife, PartnerGroupCode, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
@@ -813,8 +813,8 @@ BEGIN
 	IF (select 1 where EXISTS (select ExternalCode from Materials where ExternalCode = @MaterialCode)) is null
 				begin
 					declare @TextErrorMsg nvarchar(max)				
-					set @TextErrorMsg = CONCAT('Не найден материал с кодом: ', @MaterialCode);
-					THROW 51000, @TextErrorMsg, 16
+					set @TextErrorMsg = CONCAT('(51003) Не найден материал с кодом: #!', @MaterialCode);
+					THROW 51003, @TextErrorMsg, 16
 				end;
 				
 	INSERT INTO BatchNumbers (ExternalCode, MaterialCode, BatchNumber, ExpirationDate, DocumentNumbers, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
@@ -914,8 +914,8 @@ begin
 		end;
 	else
 		begin
-			set @TextErrorMsg = CONCAT('Не найден вид запаса с внешним кодом: ', @ExternalCode);
-			THROW 51000, @TextErrorMsg, 16
+			set @TextErrorMsg = CONCAT('(51009) Не найден вид запаса с внешним кодом: #!', @ExternalCode);
+			THROW 51009, @TextErrorMsg, 16
 		end;
 	
 end;
