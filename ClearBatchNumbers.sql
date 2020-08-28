@@ -1,13 +1,13 @@
-USE TRANSIT
+п»їUSE TRANSIT
 
 go
 
-print('Запущен процесс чистки таблицы BatchNumbers')
--- Проверка на существование времеменной таблицы
+print('Р—Р°РїСѓС‰РµРЅ РїСЂРѕС†РµСЃСЃ С‡РёСЃС‚РєРё С‚Р°Р±Р»РёС†С‹ BatchNumbers')
+-- РџСЂРѕРІРµСЂРєР° РЅР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ РІСЂРµРјРµРјРµРЅРЅРѕР№ С‚Р°Р±Р»РёС†С‹
  IF OBJECT_ID('tmpBatchNumbers', 'U') is not null
 	drop table #tmpBatchNumbers
 
--- Создаем временную таблицу, в которую поместим актуальные данные
+-- РЎРѕР·РґР°РµРј РІСЂРµРјРµРЅРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ, РІ РєРѕС‚РѕСЂСѓСЋ РїРѕРјРµСЃС‚РёРј Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ
 CREATE TABLE #tmpBatchNumbers 
 (
 	ExternalCode nvarchar(50) not  null,
@@ -24,7 +24,7 @@ CREATE TABLE #tmpBatchNumbers
 	CHECKED_BY_PI datetime null,
 	RecordDate datetime null
 )
--- Заполняем временную таблица
+-- Р—Р°РїРѕР»РЅСЏРµРј РІСЂРµРјРµРЅРЅСѓСЋ С‚Р°Р±Р»РёС†Р°
 INSERT INTO #tmpBatchNumbers (ExternalCode, MaterialCode, BatchNumber, ExpirationDate, DocumentNumbers, PROCESSED_DATE, PROCESSED_STATUS, PROCESSED_COMMENT,
 		DOCNUM, DOC_SENDER, DOC_RECEIVER, CHECKED_BY_PI, RecordDate)
 select bn.ExternalCode, bn.MaterialCode, bn.BatchNumber, bn.ExpirationDate, bn.DocumentNumbers, bn.PROCESSED_DATE, bn.PROCESSED_STATUS, bn.PROCESSED_COMMENT,
@@ -36,23 +36,23 @@ on bn.ExternalCode = LastRecord.ExternalCode
 group by
 	bn.ExternalCode, bn.MaterialCode, bn.BatchNumber, bn.ExpirationDate, bn.DocumentNumbers, bn.PROCESSED_DATE, bn.PROCESSED_STATUS, bn.PROCESSED_COMMENT,
 		bn.DOCNUM, bn.DOC_SENDER, bn.DOC_RECEIVER, bn.CHECKED_BY_PI, bn.RecordDate
--- Выводим результат выполнения
--- Количество до
+-- Р’С‹РІРѕРґРёРј СЂРµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ
+-- РљРѕР»РёС‡РµСЃС‚РІРѕ РґРѕ
 declare @CountUpTo int = (select count(*) from BatchNumbers)
-print('Количество до: '+cast(@CountUpTo as nvarchar(50)))
--- Чистим таблицу
+print('РљРѕР»РёС‡РµСЃС‚РІРѕ РґРѕ: '+cast(@CountUpTo as nvarchar(50)))
+-- Р§РёСЃС‚РёРј С‚Р°Р±Р»РёС†Сѓ
 truncate table BatchNumbers
 
 
--- Загружаем данные из временной таблицы в физическую
+-- Р—Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ РёР· РІСЂРµРјРµРЅРЅРѕР№ С‚Р°Р±Р»РёС†С‹ РІ С„РёР·РёС‡РµСЃРєСѓСЋ
 INSERT INTO BatchNumbers(ExternalCode, MaterialCode, BatchNumber, ExpirationDate, DocumentNumbers, PROCESSED_DATE, PROCESSED_STATUS, PROCESSED_COMMENT,
 		DOCNUM, DOC_SENDER, DOC_RECEIVER, CHECKED_BY_PI, RecordDate)
 select * from #tmpBatchNumbers
 
--- Количество после
+-- РљРѕР»РёС‡РµСЃС‚РІРѕ РїРѕСЃР»Рµ
 declare @CountAfter int = (select count(*) from BatchNumbers)
-print('Количество после: '+cast(@CountAfter as nvarchar(50)))
--- Удаляем временную таблицу
+print('РљРѕР»РёС‡РµСЃС‚РІРѕ РїРѕСЃР»Рµ: '+cast(@CountAfter as nvarchar(50)))
+-- РЈРґР°Р»СЏРµРј РІСЂРµРјРµРЅРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ
 drop table #tmpBatchNumbers
 
 
