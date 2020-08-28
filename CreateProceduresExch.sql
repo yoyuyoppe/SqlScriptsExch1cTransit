@@ -611,6 +611,12 @@ AS
 				THROW 51007, @TextErrorMsg, 16
 			end;
 
+		if (select 1 where exists(select tid from hdr_DeliveryRequest where ExternalCode = @DeliveryRequestCode)) is null
+			begin
+				set @TextErrorMsg = CONCAT('(51010) Не найдена заявка с кодом: #!', @DeliveryRequestCode);
+				THROW 51007, @TextErrorMsg, 16
+			end;
+
 		INSERT INTO tbl_Transport (ExternalCode, TransportCode, DeliveryRequestCode, Priority, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
 		VALUES(@ExternalCode, @TransportCode, @DeliveryRequestCode, @Priority, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, GETDATE())
 
