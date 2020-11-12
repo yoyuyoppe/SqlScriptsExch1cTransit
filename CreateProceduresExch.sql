@@ -59,7 +59,9 @@ if OBJECT_ID('Add_MaterialSpecificationsInput_Output', 'P') is not null
 IF(OBJECT_ID('LoadDictFromCSV', 'P')) is not null
 	drop proc LoadDictFromCSV 
 IF(OBJECT_ID('MappingStockTypes', 'P')) is not null
-	drop proc MappingStockTypes 
+	drop proc MappingStockTypes
+if OBJECT_ID('Add_PartNumbers', 'P') is not null
+	drop procedure Add_PartNumbers	
 
 GO
 	CREATE PROC Add_hdrDeliveryRequest
@@ -125,7 +127,7 @@ GO
 		@MaterialCode nvarchar(50),
 		@Quantity decimal(25,6),
 		@MaterialUnitCode nvarchar(50),
-		@MaterialBatch nvarchar(50) = null,
+		@MaterialBatch nvarchar(100) = null,
 		@MaterialSeriesCode nvarchar(50) = null,
 		@QualityTypeCode nvarchar(50) = null,
 		@DocNum nvarchar(50),
@@ -264,7 +266,8 @@ select
     hdr_dr.DeliveryStatus as Status,
     hdr_dr.PROCESSED_COMMENT as Comment,
 	hdr_dr.PaletNumbers,
-	hdr_dr.DOCNUM
+	hdr_dr.DOCNUM,
+	hdr_dr.QuantityOfPackages
 from 
     hdr_DeliveryResponse as hdr_dr
 where 
@@ -275,7 +278,8 @@ group by
     hdr_dr.DeliveryStatus, 
     hdr_dr.PROCESSED_COMMENT,
 	hdr_dr.PaletNumbers,
-	hdr_dr.DOCNUM
+	hdr_dr.DOCNUM,
+	hdr_dr.QuantityOfPackages
 
 union
 
@@ -295,7 +299,8 @@ select
     tbl_dr.PROCESSED_STATUS as Status,
     tbl_dr.PROCESSED_COMMENT as Comment,
 	null,
-	tbl_dr.DOCNUM
+	tbl_dr.DOCNUM,
+	null
 FROM
     tbl_DeliveryResponse as tbl_dr 
 where 
@@ -924,5 +929,31 @@ begin
 			THROW 51009, @TextErrorMsg, 16
 		end;
 	
+end;
+
+GO
+
+CREATE PROC Add_PartNumbers 
+	@ExternalCode nvarchar(50),
+	@DeliveryRequestCode nvarchar(50), 
+	@OwnerBatch nvarchar(50),
+	@AMCodePDF nvarchar(150)=null,
+	@AMCodeData nvarchar(150)=null,
+	@AMCodeQR nvarchar(150)=null,
+	@AMGroupObject1 nvarchar(50),
+	@AMGroupObject2 nvarchar(50),
+	@DOCNUM nvarchar(50),
+	@DOC_SENDER nvarchar(50) = '1С',
+	@DOC_RECEIVER nvarchar(50) = 'WMS',
+	@autotest bit=0  
+as 
+begin
+	
+	if @autotest = 0
+		return
+
+	INSERT INTO PartNumbers (ExternalCode, DeliveryRequestCode, OwnerBatch, AMCodePDF, AMCodeData, AMCodeQR, AMGroupObject1, AMGroupObject2, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)		
+	VALUES (@ExternalCode, @DeliveryRequestCode, @OwnerBatch, @AMCodePDF, @AMCodeData, @AMCodeQR, @AMGroupObject1, @AMGroupObject2, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, GETDATE())
+
 end;
 
