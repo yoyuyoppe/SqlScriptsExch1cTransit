@@ -1,3 +1,8 @@
+
+declare @DateBeg datetime = GetDate()
+declare @DateEnd datetime = GetDate()
+declare @OrdNums nvarchar(max)
+
 select
 	[Номер маршрута] = VL.RouteNumber,
 	[Транспорт] = VL.VehicleBrand,
@@ -29,7 +34,7 @@ from hdr_DeliveryRequest as HDR
 		inner join Units as U (nolock) on MU.unit_id = U.tid
 		left join MaterialUnitBarcodes as MUB
 		on MUB.MaterialUnit_id = MU.tid
-where hdr.DeliveryDate = '17-09-2021' and hdr.DebtorPartner_id = 7467
+where hdr.DeliveryDate between @DateBeg and @DateEnd and hdr.DebtorPartner_id = 7467 and hdr.ExternalCode in (@OrdNums)
 group by
 	VL.RouteNumber,
 	VL.VehicleBrand,
@@ -44,8 +49,3 @@ group by
 	lower(cast(dbo.CutZeroTale(TPL.BaseQuantity/ mu.UnitKoeff) as nvarchar(max)))
 order by hdr.ExternalCode
 
---select top 10 * from hdr_DeliveryRequest where ExternalCode = 'ТШЦ1295037'
-
---select top 10 * from VisitorsLog where RouteNumber = 'Ц000042335'
-
---select top 100  * from MaterialUnitBarcodes
