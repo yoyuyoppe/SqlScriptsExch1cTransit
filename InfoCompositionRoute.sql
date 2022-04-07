@@ -1,21 +1,21 @@
-
+п»ї
 declare @DateBeg datetime = GetDate()
 declare @DateEnd datetime = GetDate()
 declare @OrdNums nvarchar(max)
 
 select
-	[Номер маршрута] = VL.RouteNumber,
-	[Транспорт] = VL.VehicleBrand,
-	[ГосНомер] = VL.VehicleNumber,
-	[Номер заказа] = hdr.ExternalCode, 
-	[Мастер ОС] = SOM.Barcode,
-	[Дочерний ОС] = SO.Barcode,
-	[Артикул] = M.NameEN,
-	[Штрихкод] = MAX(MUB.Barcode),
-	[Материал] = M.NameRU,
-	[Годен до] = BO.ExpDate,
-	[Количество] = lower(cast(dbo.CutZeroTale(TPL.BaseQuantity/ mu.UnitKoeff) as nvarchar(max))),
-	[Единица измерения] = u.ShortName
+	[РќРѕРјРµСЂ РјР°СЂС€СЂСѓС‚Р°] = VL.RouteNumber,
+	[РўСЂР°РЅСЃРїРѕСЂС‚] = VL.VehicleBrand,
+	[Р“РѕСЃРќРѕРјРµСЂ] = VL.VehicleNumber,
+	[РќРѕРјРµСЂ Р·Р°РєР°Р·Р°] = hdr.ExternalCode, 
+	[РњР°СЃС‚РµСЂ РћРЎ] = SOM.Barcode,
+	[Р”РѕС‡РµСЂРЅРёР№ РћРЎ] = SO.Barcode,
+	[РђСЂС‚РёРєСѓР»] = M.NameEN,
+	[РЁС‚СЂРёС…РєРѕРґ] = MAX(MUB.Barcode),
+	[РњР°С‚РµСЂРёР°Р»] = M.NameRU,
+	[Р“РѕРґРµРЅ РґРѕ] = BO.ExpDate,
+	[РљРѕР»РёС‡РµСЃС‚РІРѕ] = lower(cast(dbo.CutZeroTale(TPL.BaseQuantity/ mu.UnitKoeff) as nvarchar(max))),
+	[Р•РґРёРЅРёС†Р° РёР·РјРµСЂРµРЅРёСЏ] = u.ShortName
 from hdr_DeliveryRequest as HDR
 		inner join Transactions as T with (nolock) on T.ParentTransaction_id = HDR.Transaction_id
 		inner join Transactions as T2 with (nolock) on T2.ParentTransaction_id = T.tid
