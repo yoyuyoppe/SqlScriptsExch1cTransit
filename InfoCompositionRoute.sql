@@ -15,7 +15,8 @@ select
 	[Материал] = M.NameRU,
 	[Годен до] = BO.ExpDate,
 	[Количество] = lower(cast(dbo.CutZeroTale(TPL.BaseQuantity/ mu.UnitKoeff) as nvarchar(max))),
-	[Единица измерения] = u.ShortName
+	[Единица измерения] = u.ShortName,
+	[ГУИД] = ISNULL(MappingMaterials.TargetValue, '')
 from hdr_DeliveryRequest as HDR
 		inner join Transactions as T with (nolock) on T.ParentTransaction_id = HDR.Transaction_id
 		inner join Transactions as T2 with (nolock) on T2.ParentTransaction_id = T.tid
@@ -34,6 +35,7 @@ from hdr_DeliveryRequest as HDR
 		inner join Units as U (nolock) on MU.unit_id = U.tid
 		left join MaterialUnitBarcodes as MUB
 		on MUB.MaterialUnit_id = MU.tid
+		left join temp_ElementIntegration_65 as MappingMaterials with (nolock) on M.tid = MappingMaterials.LocalValue
 where hdr.DeliveryDate between @DateBeg and @DateEnd and hdr.DebtorPartner_id = 7467 and hdr.ExternalCode in (@OrdNums)
 group by
 	VL.RouteNumber,
@@ -46,6 +48,7 @@ group by
 	M.NameRU,
 	BO.ExpDate,
 	u.ShortName,
+	MappingMaterials.TargetValue,
 	lower(cast(dbo.CutZeroTale(TPL.BaseQuantity/ mu.UnitKoeff) as nvarchar(max)))
 order by hdr.ExternalCode
 
