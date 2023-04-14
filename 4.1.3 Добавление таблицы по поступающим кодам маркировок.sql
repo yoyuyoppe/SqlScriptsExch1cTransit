@@ -1,4 +1,4 @@
-USE TRANSITTEST
+п»їUSE TRANSITTEST
 
 go
 
@@ -45,13 +45,13 @@ go
 
 			IF (select 1 where EXISTS (select ExternalCode from hdr_DeliveryRequest where ExternalCode = @DeliveryRequestCode)) is null
 				begin
-					set @TextErrorMsg = CONCAT('(51010) Не найдена заявка с кодом: #!', @DeliveryRequestCode);
+					set @TextErrorMsg = CONCAT('(51010) РќРµ РЅР°Р№РґРµРЅР° Р·Р°СЏРІРєР° СЃ РєРѕРґРѕРј: #!', @DeliveryRequestCode);
 					THROW 51010, @TextErrorMsg, 16
 				end;
 
 			IF (select 1 where EXISTS (select ExternalCode from tbl_DeliveryRequest where ExternalCode = @DeliveryRequestRowCode)) is null
 				begin
-					set @TextErrorMsg = CONCAT('(51012) Не найдена строка заявки: #!', @DeliveryRequestRowCode);
+					set @TextErrorMsg = CONCAT('(51012) РќРµ РЅР°Р№РґРµРЅР° СЃС‚СЂРѕРєР° Р·Р°СЏРІРєРё: #!', @DeliveryRequestRowCode);
 					THROW 51012, @TextErrorMsg, 16
 				end;
 
