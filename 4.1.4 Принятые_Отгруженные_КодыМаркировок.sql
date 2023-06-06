@@ -1,6 +1,7 @@
 if OBJECT_ID('GetDeliveryResponseMarks', 'P') is not null
 	drop procedure GetDeliveryResponseMarks
-	
+
+go	
 
 CREATE PROC GetDeliveryResponseMarks
 
