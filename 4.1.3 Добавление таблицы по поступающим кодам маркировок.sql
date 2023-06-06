@@ -8,9 +8,9 @@ begin
 	create table tbl_DeliveryRequestMarks(
 		tid int primary key identity,
 		ExternalCode nvarchar(200) UNIQUE,
-		DeliveryRequestCode nvarchar(200) not null UNIQUE,
-		DeliveryRequestRowCode nvarchar(200) not null UNIQUE,
-		KI nvarchar(200) not null UNIQUE,
+		DeliveryRequestCode nvarchar(200) not null,
+		DeliveryRequestRowCode nvarchar(200) not null,
+		KI nvarchar(200) not null,
 		KIGU nvarchar(200),
 		KITU nvarchar(200),
 		SSCC nvarchar(200),
