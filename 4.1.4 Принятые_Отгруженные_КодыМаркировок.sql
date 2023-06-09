@@ -1,4 +1,8 @@
 
+if OBJECT_ID('GetDeliveryResponseMarks', 'P') is not null
+drop procedure GetDeliveryResponseMarks
+
+go
 CREATE PROC GetDeliveryResponseMarks
 	@DocNum nvarchar(50),
 	@Update bit = 0
@@ -8,7 +12,9 @@ begin
 		
 	select
 		null as ExternalCode,
-	    tdrm.DeliveryRequestCode as DeliveryRequestCode,  
+	    tdrm.DeliveryRequestCode as DeliveryRequestCode,
+	    hdr.DeliveryTypeCode,
+	    hdr.DeliveryStatus as Status,
 	    null as DeliveryRequestRowCode,
 	    null as KI,
 		null as KIGU,
@@ -17,13 +23,17 @@ begin
 	    tdrm.PROCESSED_COMMENT as Comment,
 		tdrm.DOCNUM
 	from
-	    tbl_DeliveryResponseMarks tdrm 
+	    tbl_DeliveryResponseMarks tdrm
+	    left join hdr_DeliveryResponse hdr with (nolock) 
+	    on tdrm.DeliveryRequestCode  = hdr.ExternalCode 
 	where 
 	    tdrm.DOCNUM = @DocNum
 	group by
 	    tdrm.DeliveryRequestCode,
 	    tdrm.PROCESSED_COMMENT,
-		tdrm.DOCNUM
+		tdrm.DOCNUM,
+		hdr.DeliveryTypeCode,
+		hdr.DeliveryStatus
 	HAVING
 		MAX(IIF(tdrm.CHECKED_BY_PI is null, 0, 1)) = @Update	
 	
@@ -31,7 +41,9 @@ begin
 	
 	select
 		tdrm.ExternalCode,
-	    tdrm.DeliveryRequestCode as DeliveryRequestCode,  
+	    tdrm.DeliveryRequestCode as DeliveryRequestCode, 
+	    null,
+	    null,
 	    tdrm.DeliveryRequestRowCode,
 	    tdrm.KI,
 		tdrm.KIGU,
@@ -59,7 +71,3 @@ begin
 		DeliveryRequestCode, ExternalCode
 	
 end
-
-
-	
-	

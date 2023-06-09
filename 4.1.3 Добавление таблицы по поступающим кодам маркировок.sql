@@ -1,26 +1,4 @@
-﻿USE TRANSITTEST
-
-go
-
-if OBJECT_ID('tbl_DeliveryRequestMarks', 'U') is null
-begin
-
-	create table tbl_DeliveryRequestMarks(
-		tid int primary key identity,
-		ExternalCode nvarchar(200) UNIQUE,
-		DeliveryRequestCode nvarchar(200) not null,
-		DeliveryRequestRowCode nvarchar(200) not null,
-		KI nvarchar(200) not null,
-		KIGU nvarchar(200),
-		KITU nvarchar(200),
-		SSCC nvarchar(200),
-		RecordDate datetime not null
-	);
-
-end;
-
-
-if OBJECT_ID('Add_tblDeliveryRequestMarks', 'P') is not null
+﻿if OBJECT_ID('Add_tblDeliveryRequestMarks', 'P') is not null
 drop procedure Add_tblDeliveryRequestMarks
 
 go
@@ -33,6 +11,9 @@ go
 		@KIGU nvarchar(200) = null,
 		@KITU nvarchar(200) = null,
 		@SSCC nvarchar(200) = null,
+		@DocNum nvarchar(50),
+		@DocSender nvarchar(50) = '1С',
+		@DocReceiver nvarchar(50) = 'WMS',
 		@autotest bit = 0
 	as
 			
@@ -55,8 +36,8 @@ go
 				THROW 51012, @TextErrorMsg, 16
 			end;
 
-		insert into tbl_DeliveryRequestMarks (ExternalCode, DeliveryRequestCode, DeliveryRequestRowCode, KI, KIGU, KITU, SSCC, RecordDate)
-		values (@ExternalCode, @DeliveryRequestCode, @DeliveryRequestRowCode, @KI, @KIGU, @KITU, @SSCC, GetDate())
+		insert into tbl_DeliveryRequestMarks (ExternalCode, DeliveryRequestCode, DeliveryRequestRowCode, KI, KIGU, KITU, SSCC, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
+		values (@ExternalCode, @DeliveryRequestCode, @DeliveryRequestRowCode, @KI, @KIGU, @KITU, @SSCC, @DOCNUM, @DOCSENDER, @DOCRECEIVER, GetDate())
 
 
 		return
