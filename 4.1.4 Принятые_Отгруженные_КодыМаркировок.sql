@@ -26,6 +26,7 @@ begin
 	    tbl_DeliveryResponseMarks tdrm
 	    left join hdr_DeliveryResponse hdr with (nolock) 
 	    on tdrm.DeliveryRequestCode  = hdr.ExternalCode 
+	    and hdr.DOCNUM  = @DocNum
 	where 
 	    tdrm.DOCNUM = @DocNum
 	group by
