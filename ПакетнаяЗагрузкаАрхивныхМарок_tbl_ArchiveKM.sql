@@ -1,4 +1,4 @@
-
+﻿
 USE TRANSIT
 
 GO
@@ -26,7 +26,7 @@ create table #tempArchiveKM
 GO
 
 BULK INSERT #tempArchiveKM 
-FROM '\\10.50.0.3\for_wms\obmenTRANSIT\Files\�����_���������_2023\tbl_ArchiveKM_�����_23.csv'
+FROM '\\10.50.0.3\for_wms\obmenTRANSIT\Files\Марки_отгружены_2023\tbl_ArchiveKM_Егаис_23.csv'
 WITH (FIRSTROW = 1,CODEPAGE = '1251', DATAFILETYPE = 'char',FIELDTERMINATOR = '	' , ROWTERMINATOR = '\n')
 
 GO
@@ -41,7 +41,7 @@ on tempArchiveKM.MaterialCode = Materials.TargetValue
 
 GO
 
-exec Add_DocNum @DocNum = 'cda90bcb-7a8d-4f54-80f5-8a426a2a341b', @autotest = 0
+--exec Add_DocNum @DocNum = 'cda90bcb-7a8d-4f54-80f5-8a426a2a341b', @autotest = 0 - лидовцы сказала, чтобы не добавляли ид пакеты в таблицу DOCNUM
 
 --truncate table #tempArchiveKM
 
