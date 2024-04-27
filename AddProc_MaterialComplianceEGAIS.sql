@@ -25,7 +25,10 @@ AS
 
 			declare @RecordDate datetime = GetDate();
 
-			insert into MaterialComplianceEGAIS (ExternalCode, MaterialCode, AlcoCode, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
-			Values (@ExternalCode, @MaterialCode, @AlcoCode, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, @RecordDate)
+			IF (select 1 where EXISTS (select AlcoCode from MaterialComplianceEGAIS where AlcoCode = @AlcoCode and MaterialCode = @MaterialCode)) is null
+				begin
+					insert into MaterialComplianceEGAIS (ExternalCode, MaterialCode, AlcoCode, DOCNUM, DOC_SENDER, DOC_RECEIVER, RecordDate)
+					Values (@ExternalCode, @MaterialCode, @AlcoCode, @DOCNUM, @DOC_SENDER, @DOC_RECEIVER, @RecordDate)
+				end;
 
 	END
